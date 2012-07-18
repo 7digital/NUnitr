@@ -1,0 +1,7 @@
+
+*~
+*.gemspec
+
+pkg/
+release/
+coverage/
