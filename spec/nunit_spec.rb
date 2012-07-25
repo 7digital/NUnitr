@@ -61,11 +61,19 @@ describe NUnit do
 		before(:each) do
 			ENV.delete('teamcity.dotnet.nunitlauncher')  
 			given_the_glob_returns(['c:/src/MyApp.UnitTests.dll'])
-			Dir.stubs(:glob).with("./tools/**/nunit-console.exe").returns(['c:/local/nunit.exe'])
 		end		
 		
 		it 'executes the local runner' do
-			@nunit.expects(:sh).with('./tools/nuget.exe install Nunit.Runners -o ./tools')
+			Dir.stubs(:glob).with("./tools/*2.6.0.12051/**/nunit-console.exe").returns(['c:/local/nunit.exe'])
+			@nunit.expects(:sh).with('./tools/nuget.exe install Nunit.Runners -o ./tools -Version 2.6.0.12051')
+			@nunit.expects(:sh).with('c:/local/nunit.exe c:/src/MyApp.UnitTests.dll')
+			@nunit.run(@pattern)
+		end		
+		
+		it 'executes a specific version of the local runner' do
+			Dir.stubs(:glob).with("./tools/*2.5/**/nunit-console.exe").returns(['c:/local/nunit.exe'])
+			@nunit.nuget_nunit_version = '2.5'
+			@nunit.expects(:sh).with('./tools/nuget.exe install Nunit.Runners -o ./tools -Version 2.5')
 			@nunit.expects(:sh).with('c:/local/nunit.exe c:/src/MyApp.UnitTests.dll')
 			@nunit.run(@pattern)
 		end		

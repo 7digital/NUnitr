@@ -15,11 +15,11 @@ require 'rake'
 require 'jeweler'
 Jeweler::Tasks.new do |gem|
 	gem.name = 'nunitr'
-	gem.homepage = 'http://'
+	gem.homepage = 'https://github.com/7digital/NUnitr'
 	gem.license = 'MIT'
 	gem.summary = %Q{Build tasks for .Net projects}
 	gem.description = %Q{Find and tokenise files!}
-	gem.email = ''
+	gem.email = 'rob.beal@7digital.com'
 	gem.authors = ['Robert Beal']
 	gem.files = FileList['{lib}/**/*']
 end
