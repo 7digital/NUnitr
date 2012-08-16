@@ -2,7 +2,7 @@ include Rake::DSL
 
 class NUnit
 
-	attr_accessor :nunit_runner, :teamcity_nunit_version, :nuget_nunit_version
+	attr_accessor :teamcity_nunit_version, :nuget_nunit_version
 	
 	def initialize()
 		@teamcity_nunit_version = 'v4.0 x86 NUnit-2.5.3'
