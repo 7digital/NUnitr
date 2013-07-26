@@ -2,11 +2,12 @@ include Rake::DSL
 
 class NUnit
 
-	attr_accessor :teamcity_nunit_version, :nuget_nunit_version
+	attr_accessor :teamcity_nunit_version, :nuget_nunit_version, :nuget_path
 	
 	def initialize()
 		@teamcity_nunit_version = 'v4.0 x86 NUnit-2.5.3'
-		@nuget_nunit_version = '2.6.0.12051'				
+		@nuget_nunit_version = '2.6.0.12051'
+		@nuget_path = './.nuget/NuGet.exe'				
 	end
 
 	def run(pattern, environment=nil)
@@ -27,7 +28,7 @@ class NUnit
 	
 	def runner
 		if ENV['teamcity.dotnet.nunitlauncher'].nil?
-			sh "./tools/nuget.exe install Nunit.Runners -o ./tools -Version #{@nuget_nunit_version}"
+			sh "#{@nuget_path} install Nunit.Runners -o ./tools -Version #{@nuget_nunit_version}"
 			return Dir.glob("./tools/*#{@nuget_nunit_version}/**/nunit-console.exe").last
 		end
 		
