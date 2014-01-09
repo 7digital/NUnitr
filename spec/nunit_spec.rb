@@ -40,6 +40,19 @@ describe NUnit do
 		end		
 	end
 
+	context 'Given there inclusions and exclusions' do
+		before(:each) do
+			given_the_glob_returns(['c:/src/MyApp.UnitTests.dll'])
+		end	
+		
+		it 'replaces the application config with the environment config' do
+			File.stubs(:exists?).with('c:/src/App.systest.config').returns(true)
+			@nunit.expects(:sh).with("copy c:\\src\\App.systest.config c:\\src\\MyApp.UnitTests.dll.config")
+			@nunit.expects(:sh).with('c:/teamcity/nunit.exe v4.0 x86 NUnit-2.5.3 c:/src/MyApp.UnitTests.dll /include:Smoke /exclude:EndToEnd')
+			@nunit.run(@pattern, 'systest', 'Smoke', 'EndToEnd')
+		end		
+	end
+
 	context 'Given a Team City test runner' do
 		before(:each) do
 			given_the_glob_returns(['c:/src/MyApp.UnitTests.dll'])

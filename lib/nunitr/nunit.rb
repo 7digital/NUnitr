@@ -10,7 +10,7 @@ class NUnit
 		@nuget_path = './.nuget/NuGet.exe'				
 	end
 
-	def run(pattern, environment=nil)
+	def run(pattern, environment=nil, include=nil, exclude=nil)
 		glob_pattern = "**/[b][i][n]/Release/#{pattern}.dll"
 		dlls = Dir.glob(glob_pattern)
 		raise TestFilesNotFound, "No tests found for pattern #{glob_pattern}" if dlls.empty?
@@ -23,7 +23,7 @@ class NUnit
 			end	
 		end
 
-		sh "#{runner} #{dlls.join(' ').strip}"		
+		sh "#{runner} #{dlls.join(' ').strip}#{include.nil? ? '' : " /include:#{include}"}#{exclude.nil? ? '' : " /exclude:#{exclude}"}"		
 	end
 	
 	def runner
