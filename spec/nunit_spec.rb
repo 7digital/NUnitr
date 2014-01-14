@@ -40,19 +40,6 @@ describe NUnit do
 		end		
 	end
 
-	context 'Given there inclusions and exclusions' do
-		before(:each) do
-			given_the_glob_returns(['c:/src/MyApp.UnitTests.dll'])
-		end	
-		
-		it 'replaces the application config with the environment config' do
-			File.stubs(:exists?).with('c:/src/App.systest.config').returns(true)
-			@nunit.expects(:sh).with("copy c:\\src\\App.systest.config c:\\src\\MyApp.UnitTests.dll.config")
-			@nunit.expects(:sh).with('c:/teamcity/nunit.exe v4.0 x86 NUnit-2.5.3 c:/src/MyApp.UnitTests.dll /include:Smoke /exclude:EndToEnd')
-			@nunit.run(@pattern, 'systest', 'Smoke', 'EndToEnd')
-		end		
-	end
-
 	context 'Given a Team City test runner' do
 		before(:each) do
 			given_the_glob_returns(['c:/src/MyApp.UnitTests.dll'])
@@ -68,6 +55,13 @@ describe NUnit do
 			@nunit.expects(:sh).with("c:/teamcity/nunit.exe #{@nunit.teamcity_nunit_version} c:/src/MyApp.UnitTests.dll")
 			@nunit.run(@pattern)
 		end
+		
+		it 'adds category tags' do
+			File.stubs(:exists?).with('c:/src/App.systest.config').returns(true)
+			@nunit.expects(:sh).with("copy c:\\src\\App.systest.config c:\\src\\MyApp.UnitTests.dll.config")
+			@nunit.expects(:sh).with("c:/teamcity/nunit.exe v4.0 x86 NUnit-2.5.3 c:/src/MyApp.UnitTests.dll /category-include:Live;Staging /category-exclude:EndToEnd")
+			@nunit.run(@pattern, 'systest', 'Live,Staging', 'EndToEnd')
+		end		
 	end
 	
 	context 'Given a local test runner' do
@@ -90,5 +84,15 @@ describe NUnit do
 			@nunit.expects(:sh).with('c:/local/nunit.exe c:/src/MyApp.UnitTests.dll')
 			@nunit.run(@pattern)
 		end		
+		
+		it 'adds category tags' do
+			Dir.stubs(:glob).with("./tools/*2.6.0.12051/**/nunit-console.exe").returns(['c:/local/nunit.exe'])
+			File.stubs(:exists?).with('c:/src/App.systest.config').returns(true)
+			@nunit.expects(:sh).with("copy c:\\src\\App.systest.config c:\\src\\MyApp.UnitTests.dll.config")
+			@nunit.expects(:sh).with('./.nuget/NuGet.exe install Nunit.Runners -o ./tools -Version 2.6.0.12051')
+			@nunit.expects(:sh).with('c:/local/nunit.exe c:/src/MyApp.UnitTests.dll /include:Live,Staging /exclude:EndToEnd')
+			@nunit.run(@pattern, 'systest', 'Live,Staging', 'EndToEnd')
+		end			
 	end
+	
 end

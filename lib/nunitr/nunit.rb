@@ -23,7 +23,10 @@ class NUnit
 			end	
 		end
 
-		sh "#{runner} #{dlls.join(' ').strip}#{include.nil? ? '' : " /include:#{include}"}#{exclude.nil? ? '' : " /exclude:#{exclude}"}"		
+		includes = category('include', include)
+		excludes = category('exclude', exclude)
+
+		sh "#{runner} #{dlls.join(' ').strip}#{includes}#{excludes}"		
 	end
 	
 	def runner
@@ -34,6 +37,13 @@ class NUnit
 		
 		return "#{ENV['teamcity.dotnet.nunitlauncher']} #{@teamcity_nunit_version}"
 	end
+	
+	def category(name, tags)
+		return '' if(tags.nil? or tags.empty?)
+		return " /category-#{name}:#{tags.gsub(',', ';')}" if !ENV['teamcity.dotnet.nunitlauncher'].nil?
+		
+		return " /#{name}:#{tags}"
+	end	
 end
 
 class TestFilesNotFound < StandardError  
